@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:godparticle2/services/chat_web_service.dart';
 import 'package:godparticle2/theme/colors.dart';
 import 'package:godparticle2/widgets/search_section.dart';
 import 'package:godparticle2/widgets/side_bar.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String fullResponse = "";
+  @override
+  void initState() {
+    super.initState();
+    ChatWebService().connect();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +31,18 @@ class HomePage extends StatelessWidget {
               children: [
                 // search section
                 Expanded(child: SearchSection()),
+                StreamBuilder(
+                  stream: ChatWebService().contentStream,
+                  builder: (content, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    fullResponse += snapshot.data?['data'] ?? '';
+
+                    return Text(fullResponse);
+                  },
+                ),
                 // footer
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 16),

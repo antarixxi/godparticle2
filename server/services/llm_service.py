@@ -41,7 +41,7 @@ class LLMService:
         response = self.client.models.generate_content_stream(
             model=self.model_name,
             contents=[types.Content(role="user", parts=[types.Part(text=full_prompt)])],
-            stream=True,
+            # stream=True,
         )
 
         for chunk in response:

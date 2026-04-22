@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godparticle2/pages/chat_page.dart';
 import 'package:godparticle2/pages/home_page.dart';
 import 'package:godparticle2/theme/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,9 +19,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.submitButton),
-        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+        textTheme: GoogleFonts.interTextTheme(
+          ThemeData.dark().textTheme.copyWith(
+            bodyMedium: const TextStyle(
+              fontSize: 15,
+              color: AppColors.whiteColor,
+            ),
+          ),
+        ),
       ),
-      home: const HomePage(),
+      home: const ChatPage(question: 'What is ind vs aus score?'),
     );
   }
 }

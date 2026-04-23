@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godparticle2/services/chat_web_service.dart';
 import 'package:godparticle2/theme/colors.dart';
 
 class SourcesSection extends StatefulWidget {
@@ -9,20 +10,17 @@ class SourcesSection extends StatefulWidget {
 }
 
 class _SourcesSectionState extends State<SourcesSection> {
-  List<Map<String, dynamic>> searchResults = [
-    {
-      'title': 'Ind vs Aus Live Score 4th Test',
-      'url': 'https://www.moneycontrol.com/',
-    },
-    {
-      'title': 'Ind vs Aus Live Boxing Day Test',
-      'url': 'https://timesofindia.indiatimes.com/',
-    },
-    {
-      'title': 'Ind vs Aus - 4 Australian Batters Score Half Centuries',
-      'url': 'https://economictimes.indiatimes.com/',
-    },
-  ];
+  List searchResults = [];
+
+  @override
+  void initState() {
+    super.initState();
+    ChatWebService().searchResultStream.listen((data) {
+      setState(() {
+        searchResults = data['data'];
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

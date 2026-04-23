@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:godparticle2/pages/chat_page.dart';
 import 'package:godparticle2/pages/home_page.dart';
 import 'package:godparticle2/theme/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const ChatPage(question: 'What is ind vs aus score?'),
+      home: const HomePage(),
     );
   }
 }

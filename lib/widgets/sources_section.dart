@@ -1,6 +1,12 @@
+import 'dart:js_interop_unsafe';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:js' as js;
 import 'package:godparticle2/services/chat_web_service.dart';
 import 'package:godparticle2/theme/colors.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SourcesSection extends StatefulWidget {
   const SourcesSection({super.key});
@@ -10,7 +16,21 @@ class SourcesSection extends StatefulWidget {
 }
 
 class _SourcesSectionState extends State<SourcesSection> {
-  List searchResults = [];
+  bool isLoading = true;
+  List searchResults = [
+    {
+      'title': 'Ind vs Aus Live Score 4th Test',
+      'url': 'https://www.moneycontrol.com/',
+    },
+    {
+      'title': 'Ind vs Aus Live Boxing Day Test',
+      'url': 'https://timesofindia.indiatimes.com/',
+    },
+    {
+      'title': 'Ind vs Aus - 4 Australian Batters Score Half Centuries',
+      'url': 'https://economictimes.indiatimes.com/',
+    },
+  ];
 
   @override
   void initState() {
@@ -18,6 +38,7 @@ class _SourcesSectionState extends State<SourcesSection> {
     ChatWebService().searchResultStream.listen((data) {
       setState(() {
         searchResults = data['data'];
+        isLoading = false;
       });
     });
   }
@@ -38,36 +59,50 @@ class _SourcesSectionState extends State<SourcesSection> {
           ],
         ),
         const SizedBox(height: 16),
-        Wrap(
-          spacing: 16,
-          runSpacing: 16,
-          children: searchResults.map((res) {
-            return Container(
-              width: 150,
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.cardColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    res['title'],
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+        Skeletonizer(
+          enabled: isLoading,
+          child: Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            children: searchResults.map((res) {
+              return GestureDetector(
+                onTap: () async {
+                  if (!kIsWeb) {
+                    if (!await launchUrl(Uri.parse(res['url']))) {
+                      throw Exception('Could not launch ${res['url']}');
+                    }
+                  } else {
+                    js.context.callMethod('open', [res['url']]);
+                  }
+                },
+                child: Container(
+                  width: 150,
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardColor,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    res['url'],
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    children: [
+                      Text(
+                        res['title'],
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        res['url'],
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          }).toList(),
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );
